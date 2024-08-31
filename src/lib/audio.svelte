@@ -15,14 +15,7 @@
 		} else {
 			audioElement.pause();
 		}
-		paused = !paused;
 	}
-
-	$effect(() => {
-		if (current.time == audioElement.duration) {
-			current.time = 0;
-		}
-	});
 </script>
 
 <audio bind:this={audioElement} src={url} bind:paused bind:currentTime={current.time} bind:duration></audio>
@@ -37,6 +30,7 @@
 			<img src="/pause.svg" alt="" />
 		</button>
 	{/if}
+	<p>{(current.time - (current.time % 60)) / 60}: {(Math.floor(current.time) % 60).toString().padStart(2, '0')}</p>
 	<input
 		type="range"
 		bind:value={current.time}
@@ -48,6 +42,7 @@
 		max={duration}
 		step={0.1}
 	/>
+	<p>{(duration - (duration % 60)) / 60}: {(Math.floor(duration) % 60).toString().padStart(2, '0')}</p>
 </div>
 
 <style>
@@ -58,14 +53,14 @@
 		justify-content: center;
 		align-items: center;
 		height: 100px;
-		width: min(80vw, 400px);
+		width: min(90vw, 400px);
 		border-radius: 50px;
 		margin: 0 auto;
-		gap: 20px;
+		gap: 10px;
 	}
 	button {
-		width: 60px;
-		height: 60px;
+		width: 50px;
+		height: 50px;
 		background: var(--color);
 		transition: border-radius 0.2s ease-in-out;
 		cursor: pointer;
@@ -103,7 +98,7 @@
 	}
 
 	input {
-		width: 50%;
+		width: 140px;
 		-webkit-appearance: none;
 		appearance: none;
 		-moz-appearance: none;
@@ -127,5 +122,12 @@
 		background: var(--color);
 		border-radius: 5px;
 		margin-top: -7.5px; /* Half the difference between thumb height and track height */
+	}
+
+	p {
+		font-family: 'Poppins';
+		padding: 0;
+		width: 50px;
+		text-align: center;
 	}
 </style>
