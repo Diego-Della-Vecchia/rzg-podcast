@@ -1,10 +1,23 @@
 <script lang="ts">
+	let { subtitles }: { subtitles: { timestamp: number; message: string }[] } = $props();
+
 	import { current } from './stores.svelte';
 
-	let { subtitles }: { subtitles: { timestamp: number; message: string }[] } = $props();
+	import { fly } from 'svelte/transition';
+
+	let userHasScrolled = $state(false);
+
+	let ignoreScroll = $state(false);
+
+	let previousTime = 0;
 
 	$effect(() => {
 		const currentTime = Math.floor(current.time);
+
+		if (currentTime == previousTime) return;
+
+		previousTime = currentTime;
+
 		let index = 0;
 
 		for (let i = 0; i < subtitles.length; i++) {
@@ -22,15 +35,32 @@
 		const message = document.getElementById('message' + index);
 		message?.classList.add('current');
 
-		console.log(index);
+		if (!userHasScrolled) {
+			ignoreScroll = false;
+			message?.scrollIntoView({ behavior: 'smooth' });
+			userHasScrolled = false;
+			ignoreScroll = true;
+		}
+
+		console.log(userHasScrolled);
 	});
 </script>
 
-<div class="container">
+<div
+	class="container"
+	onscroll={() => {
+		if (ignoreScroll) return;
+		userHasScrolled = true;
+	}}
+>
 	{#each subtitles as subtitle, i}
 		<p id={'message' + i} class={i == 0 ? 'current' : ''}>{subtitle.message}</p>
 	{/each}
 </div>
+
+{#if userHasScrolled}
+	<button transition:fly={{ y: 50 }} onclick={() => (userHasScrolled = false)}>Synchronisieren</button>
+{/if}
 
 <style>
 	.container {
@@ -63,5 +93,24 @@
 	.current {
 		background-color: var(--color);
 		color: white;
+	}
+
+	button {
+		color: black;
+		background-color: white;
+		border: var(--color) dashed 2px;
+		padding: 10px;
+		cursor: pointer;
+		font-family: 'Poppins';
+		font-size: 20px;
+		margin: 0 auto;
+		display: block;
+		transition: transform 0.2s ease-in-out;
+	}
+
+	button:active {
+		transform: scale(1.1);
+		background-color: white;
+		-webkit-tap-highlight-color: transparent;
 	}
 </style>
