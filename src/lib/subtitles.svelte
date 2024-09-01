@@ -7,9 +7,9 @@
 
 	let userHasScrolled = $state(false);
 
-	let ignoreScroll = $state(false);
-
 	let previousTime = 0;
+
+	let ignoreScroll = false;
 
 	$effect(() => {
 		const currentTime = Math.floor(current.time);
@@ -36,23 +36,26 @@
 		message?.classList.add('current');
 
 		if (!userHasScrolled) {
-			ignoreScroll = false;
-			message?.scrollIntoView({ behavior: 'smooth' });
-			userHasScrolled = false;
 			ignoreScroll = true;
-		}
 
-		console.log(userHasScrolled);
+			message?.scrollIntoView({ behavior: 'smooth' });
+
+			setTimeout(() => {
+				ignoreScroll = false;
+			}, 500);
+
+			userHasScrolled = false;
+		}
 	});
+
+	function handleScroll() {
+		if (!ignoreScroll) {
+			userHasScrolled = true;
+		}
+	}
 </script>
 
-<div
-	class="container"
-	onscroll={() => {
-		if (ignoreScroll) return;
-		userHasScrolled = true;
-	}}
->
+<div class="container" onscroll={handleScroll}>
 	{#each subtitles as subtitle, i}
 		<p id={'message' + i} class={i == 0 ? 'current' : ''}>{subtitle.message}</p>
 	{/each}
