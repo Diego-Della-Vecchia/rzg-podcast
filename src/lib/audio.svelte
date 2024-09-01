@@ -54,8 +54,7 @@
 		align-items: center;
 		height: 100px;
 		width: min(90vw, 400px);
-		border-radius: 50px;
-		margin: 0 auto;
+		margin: 50px auto;
 		gap: 10px;
 	}
 	button {

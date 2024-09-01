@@ -10,3 +10,13 @@
   --color: #134fe8;
   --grey: #dadada;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: var(--grey);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color);
+  border-radius: 5px;
+}
