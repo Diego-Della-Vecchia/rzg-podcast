@@ -16,7 +16,7 @@
 	];
 </script>
 
-<h1 class="title">China als Kolonie</h1>
+<h1 class="title">China als Halbkolonie</h1>
 <Audio url="/audio.mp3"></Audio>
 
 <Subtitles {subtitles} />

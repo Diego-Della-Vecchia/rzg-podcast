@@ -55,7 +55,6 @@
 		height: 100px;
 		width: min(90vw, 400px);
 		margin: 50px auto;
-		gap: 10px;
 	}
 	button {
 		width: 50px;
@@ -116,7 +115,7 @@
 	input::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		appearance: none;
-		width: 20px;
+		width: 5px;
 		height: 30px;
 		background: var(--color);
 		border-radius: 5px;

@@ -1,68 +1,48 @@
 <script lang="ts">
 	let { subtitles }: { subtitles: { timestamp: number; message: string }[] } = $props();
 
+	import { get } from 'svelte/store';
 	import { current } from './stores.svelte';
 
-	import { fly } from 'svelte/transition';
+	import { fly, fade } from 'svelte/transition';
 
 	let userHasScrolled = $state(false);
 
-	let previousTime = 0;
+	let currentSubtitles: { timestamp: number; message: string }[] = $state([]);
 
-	let ignoreScroll = false;
+	let previousTime = -1;
 
 	$effect(() => {
 		const currentTime = Math.floor(current.time);
 
-		if (currentTime == previousTime) return;
-
 		previousTime = currentTime;
+		const newSubtitles: { timestamp: number; message: string }[] = [];
 
-		let index = 0;
-
-		for (let i = 0; i < subtitles.length; i++) {
-			if (subtitles[i].timestamp >= currentTime || i === subtitles.length - 1) {
-				index = i;
-				break;
+		subtitles.forEach((subtitle) => {
+			if (currentTime >= subtitle.timestamp) {
+				console.log(subtitle);
+				newSubtitles.push(subtitle);
 			}
-		}
-
-		const all = document.querySelectorAll('.current');
-		all.forEach((el) => {
-			el.classList.remove('current');
 		});
-
-		const message = document.getElementById('message' + index);
-		message?.classList.add('current');
-
-		if (!userHasScrolled) {
-			ignoreScroll = true;
-
-			message?.scrollIntoView({ behavior: 'smooth' });
-
-			setTimeout(() => {
-				ignoreScroll = false;
-			}, 500);
-
-			userHasScrolled = false;
-		}
+		currentSubtitles = newSubtitles.reverse();
 	});
-
-	function handleScroll() {
-		if (!ignoreScroll) {
-			userHasScrolled = true;
-		}
-	}
 </script>
 
-<div class="container" onscroll={handleScroll}>
-	{#each subtitles as subtitle, i}
-		<p id={'message' + i} class={i == 0 ? 'current' : ''}>{subtitle.message}</p>
+<div class="container" id="subtitles" onscroll={() => (userHasScrolled = true)}>
+	{#each currentSubtitles as subtitle, i}
+		<p id={'message' + i} class={i == 0 ? 'current' : ''} in:fade={{ delay: 200 }}>{subtitle.message}</p>
 	{/each}
 </div>
 
 {#if userHasScrolled}
-	<button transition:fly={{ y: 50 }} onclick={() => (userHasScrolled = false)}>Synchronisieren</button>
+	<button
+		transition:fly={{ y: 50 }}
+		onclick={() => {
+			userHasScrolled = false;
+			const div = document.querySelector('#subtitles');
+			div?.scrollTo({ top: 0, behavior: 'smooth' });
+		}}>Synchronisieren</button
+	>
 {/if}
 
 <style>
@@ -73,11 +53,14 @@
 		margin: 50px auto;
 		height: 300px;
 		display: flex;
-		justify-content: start;
-		align-items: center;
-		flex-direction: column;
+		flex-direction: column-reverse;
 		gap: 10px;
-		overflow-y: auto;
+		overflow-y: scroll;
+	}
+
+	.container :first-child {
+		background-color: var(--color);
+		color: white;
 	}
 
 	p {
@@ -86,16 +69,12 @@
 		font-family: 'Poppins';
 		padding: 10px;
 		width: 80%;
+		margin: 10px auto;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background-color: var(--grey);
 		border-radius: 20px;
-	}
-
-	.current {
-		background-color: var(--color);
-		color: white;
 	}
 
 	button {
