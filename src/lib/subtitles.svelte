@@ -1,10 +1,9 @@
 <script lang="ts">
 	let { subtitles }: { subtitles: { timestamp: number; message: string }[] } = $props();
 
-	import { get } from 'svelte/store';
 	import { current } from './stores.svelte';
 
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 
 	let userHasScrolled = $state(false);
 
@@ -20,7 +19,6 @@
 
 		subtitles.forEach((subtitle) => {
 			if (currentTime >= subtitle.timestamp) {
-				console.log(subtitle);
 				newSubtitles.push(subtitle);
 			}
 		});
@@ -30,7 +28,7 @@
 
 <div class="container" id="subtitles" onscroll={() => (userHasScrolled = true)}>
 	{#each currentSubtitles as subtitle, i}
-		<p id={'message' + i} class={i == 0 ? 'current' : ''} in:fade={{ delay: 200 }}>{subtitle.message}</p>
+		<p id={'message' + i} class={i == 0 ? 'current' : ''} transition:fly={{ y: 50 }}>{subtitle.message}</p>
 	{/each}
 </div>
 
@@ -38,9 +36,9 @@
 	<button
 		transition:fly={{ y: 50 }}
 		onclick={() => {
-			userHasScrolled = false;
 			const div = document.querySelector('#subtitles');
 			div?.scrollTo({ top: 0, behavior: 'smooth' });
+			setTimeout(() => (userHasScrolled = false), 500);
 		}}>Synchronisieren</button
 	>
 {/if}
