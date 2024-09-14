@@ -26,11 +26,13 @@
 	});
 </script>
 
-<div class="container" id="subtitles" onscroll={() => (userHasScrolled = true)}>
-	{#each currentSubtitles as subtitle, i}
-		<p id={'message' + i} class={i == 0 ? 'current' : ''} transition:fly={{ y: 50 }}>{subtitle.message}</p>
-	{/each}
-</div>
+{#if currentSubtitles.length != 0}
+	<div class="container" id="subtitles" transition:fly={{ y: 50 }} onscroll={() => (userHasScrolled = true)}>
+		{#each currentSubtitles as subtitle (subtitle.timestamp)}
+			<p class="animate">{subtitle.message}</p>
+		{/each}
+	</div>
+{/if}
 
 {#if userHasScrolled}
 	<button
@@ -54,6 +56,7 @@
 		flex-direction: column-reverse;
 		gap: 10px;
 		overflow-y: scroll;
+		overflow-x: hidden;
 	}
 
 	.container :first-child {
@@ -85,12 +88,27 @@
 		font-size: 20px;
 		margin: 0 auto;
 		display: block;
-		transition: transform 0.2s ease-in-out;
+		transition: transform 200ms ease-in-out;
 	}
 
 	button:active {
 		transform: scale(1.1);
 		background-color: white;
 		-webkit-tap-highlight-color: transparent;
+	}
+
+	.animate {
+		animation: fade 0.3s ease-in-out;
+	}
+
+	@keyframes fade {
+		0% {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 </style>
